@@ -61,7 +61,10 @@ engine_lock = asyncio.Lock()
 class ApplyActionRequest(BaseModel):
     """Request body for apply_action endpoint."""
     action_id: str
-    params: dict[str, Any] | None = None
+    params: dict[str, Any] | None = Field(
+        default=None,
+        description="Optional parameters for the action (currently ignored by the backend)",
+    )
 
 
 class ResetRequest(BaseModel):
