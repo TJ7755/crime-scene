@@ -89,7 +89,7 @@ When live mode is enabled, the front-end calls:
 
 - `GET /api/visible_state` - Get current game state
 - `GET /api/actions` - Get available player actions
-- `POST /api/apply_action` with `{ action_id, params }` - Apply an action
+- `POST /api/apply_action` with `{ action_id, params? }` - Apply an action (params is optional)
 - `POST /api/reset` with `{ seed, crime_type, max_turns }` - Reset the game
 
 ## Deterministic Mock Demo

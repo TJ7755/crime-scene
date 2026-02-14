@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from .actions import available_player_actions
-from .beliefs import log_odds_to_probability
 from .config import PLAYER_ACTION_CONFIGS
 from .models import Evidence, GameState
 
@@ -24,7 +24,7 @@ def _map_pressure_to_label(pressure: float) -> str:
         return "critical"
 
 
-def _map_evidence_state(evidence: Evidence, state: GameState) -> str:
+def _map_evidence_state(evidence: Evidence) -> str:
     """Map evidence to a state descriptor."""
     if not evidence.active:
         return "archived"
@@ -115,23 +115,26 @@ def map_game_state_to_visible_state(state: GameState) -> dict[str, Any]:
             "id": evidence.id,
             "label": evidence.id.replace("_", " ").title(),
             "category": evidence.category,
-            "state": _map_evidence_state(evidence, state),
+            "state": _map_evidence_state(evidence),
             "summary": _generate_evidence_summary(evidence),
         })
     
     # Map timeline
+    base_time = datetime(2026, 2, 1, 20, 0, 0, tzinfo=timezone.utc)
     timeline_items = []
     for turn_idx, event in enumerate(state.case_data.timeline[:state.turn + 1]):
+        event_time = base_time + timedelta(hours=turn_idx)
         timeline_items.append({
-            "time": f"2026-02-01T{20 + turn_idx}:00:00.000Z",
-            "label": f"turn_{turn_idx}",
+            "time": event_time.isoformat(),
+            "label": f"turn_{turn_idx + 1}",
             "details": event,
         })
     
     # Add investigator action events
     for idx, action in enumerate(state.investigator_state.action_history[-5:]):
+        event_time = base_time + timedelta(hours=len(timeline_items))
         timeline_items.append({
-            "time": f"2026-02-01T{20 + len(timeline_items)}:00:00.000Z",
+            "time": event_time.isoformat(),
             "label": action.replace("_", " ").title(),
             "details": f"Investigator action: {action}",
         })
@@ -140,7 +143,8 @@ def map_game_state_to_visible_state(state: GameState) -> dict[str, Any]:
     public_pressure = _map_pressure_to_label(state.public_pressure)
     
     # Institutional pressure is loosely based on turn and player exposure
-    institutional_pressure_val = state.turn / len(state.case_data.timeline) + state.player_state.risk_exposure / 3.0
+    timeline_length = len(state.case_data.timeline) or 1
+    institutional_pressure_val = state.turn / timeline_length + state.player_state.risk_exposure / 3.0
     institutional_pressure = _map_pressure_to_label(institutional_pressure_val)
     
     # Personal pressure based on player risk and noise
