@@ -16,6 +16,12 @@ from investigation_engine.api_mapper import (
     map_game_state_to_visible_state,
 )
 from investigation_engine.simulation import GameEngine
+from investigation_engine.scenario_loader import (
+    list_scenarios,
+    load_scenario,
+    save_scenario,
+    get_scenario_path,
+)
 
 # Configure logging
 logging.basicConfig(
@@ -74,6 +80,13 @@ class ResetRequest(BaseModel):
     max_turns: int = Field(default=20, ge=1, le=100)
 
 
+class PlayScenarioRequest(BaseModel):
+    """Request body for playing a scenario."""
+    scenario_id: str
+    seed: int = Field(default=1, ge=1, le=1_000_000)
+    max_turns: int = Field(default=20, ge=1, le=100)
+
+
 @app.get("/")
 async def root():
     """Root endpoint."""
@@ -85,6 +98,10 @@ async def root():
             "GET /api/actions": "Get available actions",
             "POST /api/apply_action": "Apply an action",
             "POST /api/reset": "Reset the game",
+            "GET /api/scenarios": "List available scenarios",
+            "GET /api/scenarios/{id}": "Get a specific scenario",
+            "POST /api/scenarios/{id}": "Save/Update a scenario",
+            "POST /api/scenarios/play": "Initialize game with a scenario",
         },
     }
 
@@ -190,6 +207,101 @@ async def reset_game(request: ResetRequest) -> dict[str, Any]:
         except Exception as e:
             logger.error(f"Error resetting game: {e}", exc_info=True)
             raise HTTPException(status_code=500, detail="Error resetting game")
+
+
+@app.get("/api/scenarios")
+async def get_scenarios() -> dict[str, Any]:
+    """List all available scenario files."""
+    try:
+        scenarios = list_scenarios()
+        logger.info(f"Returning {len(scenarios)} scenarios")
+        return {"scenarios": scenarios}
+    except Exception as e:
+        logger.error(f"Error listing scenarios: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Error listing scenarios")
+
+
+@app.post("/api/scenarios/play")
+async def play_scenario(request: PlayScenarioRequest) -> dict[str, Any]:
+    """Initialize the game engine with a specific scenario configuration."""
+    global game_engine
+    
+    async with engine_lock:
+        try:
+            # Load the scenario
+            path = get_scenario_path(request.scenario_id)
+            if not path.exists():
+                raise HTTPException(status_code=404, detail=f"Scenario '{request.scenario_id}' not found")
+            
+            config = load_scenario(path)
+            
+            logger.info(
+                f"Initializing game with scenario '{request.scenario_id}', "
+                f"seed={request.seed}, max_turns={request.max_turns}"
+            )
+            
+            # Initialize game engine with the loaded config
+            # We need to create a modified GameEngine that accepts a config
+            # For now, we'll use the crime type name from the config
+            game_engine = GameEngine(
+                crime_type=config.name,
+                seed=request.seed,
+                max_turns=request.max_turns,
+            )
+            
+            visible_state = map_game_state_to_visible_state(game_engine.state)
+            
+            logger.info(f"Game initialized with scenario '{request.scenario_id}'")
+            
+            return {
+                "message": f"Game initialized with scenario '{request.scenario_id}'",
+                "visible_state": visible_state,
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"Error playing scenario {request.scenario_id}: {e}", exc_info=True)
+            raise HTTPException(status_code=500, detail="Error initializing game with scenario")
+
+
+@app.get("/api/scenarios/{scenario_id}")
+async def get_scenario(scenario_id: str) -> dict[str, Any]:
+    """Get the content of a specific scenario."""
+    try:
+        path = get_scenario_path(scenario_id)
+        if not path.exists():
+            raise HTTPException(status_code=404, detail=f"Scenario '{scenario_id}' not found")
+        
+        config = load_scenario(path)
+        logger.info(f"Loaded scenario: {scenario_id}")
+        
+        # Convert to JSON-compatible format
+        from investigation_engine.scenario_loader import _serialize_crime_type_config
+        return _serialize_crime_type_config(config)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error loading scenario {scenario_id}: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Error loading scenario")
+
+
+@app.post("/api/scenarios/{scenario_id}")
+async def save_scenario_endpoint(scenario_id: str, scenario_data: dict[str, Any]) -> dict[str, Any]:
+    """Save or update a scenario."""
+    try:
+        # Validate and deserialize
+        from investigation_engine.scenario_loader import _deserialize_crime_type_config
+        config = _deserialize_crime_type_config(scenario_data)
+        
+        # Save to file
+        path = get_scenario_path(scenario_id)
+        save_scenario(config, path)
+        
+        logger.info(f"Saved scenario: {scenario_id}")
+        return {"message": f"Scenario '{scenario_id}' saved successfully"}
+    except Exception as e:
+        logger.error(f"Error saving scenario {scenario_id}: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Error saving scenario")
 
 
 if __name__ == "__main__":

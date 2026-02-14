@@ -1,0 +1,76 @@
+{
+  "name": "fraud",
+  "allowed_evidence_types": [
+    "digital",
+    "testimonial",
+    "circumstantial"
+  ],
+  "baseline_hypotheses": {
+    "player_committed_crime": 0.22,
+    "alternative_actor": -0.3,
+    "non_criminal_explanation": -0.35
+  },
+  "default_public_pressure": 0.68,
+  "turn_pressure_curve": [
+    0.06,
+    0.06,
+    0.07,
+    0.08,
+    0.08,
+    0.09,
+    0.1,
+    0.1,
+    0.11,
+    0.12
+  ],
+  "evidence_templates": [
+    {
+      "id": "ev_dig_1",
+      "category": "digital",
+      "base_reliability": 0.89,
+      "detectability": 0.62,
+      "manipulability": 0.46,
+      "current_credibility": 0.89,
+      "hypothesis_impacts": {
+        "player_committed_crime": 0.88,
+        "alternative_actor": -0.3
+      }
+    },
+    {
+      "id": "ev_dig_2",
+      "category": "digital",
+      "base_reliability": 0.74,
+      "detectability": 0.7,
+      "manipulability": 0.58,
+      "current_credibility": 0.74,
+      "hypothesis_impacts": {
+        "player_committed_crime": 0.57,
+        "non_criminal_explanation": -0.19
+      }
+    },
+    {
+      "id": "ev_test_1",
+      "category": "testimonial",
+      "base_reliability": 0.52,
+      "detectability": 0.76,
+      "manipulability": 0.8,
+      "current_credibility": 0.52,
+      "hypothesis_impacts": {
+        "player_committed_crime": 0.26,
+        "alternative_actor": 0.14
+      }
+    },
+    {
+      "id": "ev_circ_1",
+      "category": "circumstantial",
+      "base_reliability": 0.6,
+      "detectability": 0.73,
+      "manipulability": 0.66,
+      "current_credibility": 0.6,
+      "hypothesis_impacts": {
+        "player_committed_crime": 0.33,
+        "non_criminal_explanation": 0.08
+      }
+    }
+  ]
+}
