@@ -41,14 +41,30 @@ def _deserialize_crime_type_config(data: dict[str, Any]) -> CrimeTypeConfig:
 
 
 def load_scenario(path: Path | str) -> CrimeTypeConfig:
-    """Load a scenario from a JSON file."""
+    """Load a scenario from a JSON file.
+
+    Args:
+        path: Filesystem path (string or Path) to the JSON scenario file.
+
+    Returns:
+        A CrimeTypeConfig instance loaded from the JSON file.
+
+    Raises:
+        FileNotFoundError: If the specified file does not exist.
+        json.JSONDecodeError: If the file contents are not valid JSON.
+    """
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
     return _deserialize_crime_type_config(data)
 
 
 def save_scenario(config: CrimeTypeConfig, path: Path | str) -> None:
-    """Save a scenario to a JSON file."""
+    """Save a scenario to a JSON file.
+
+    Args:
+        config: The CrimeTypeConfig instance representing the scenario to save.
+        path: Path where the scenario JSON file will be written.
+    """
     data = _serialize_crime_type_config(config)
     path_obj = Path(path)
     path_obj.parent.mkdir(parents=True, exist_ok=True)
@@ -59,7 +75,11 @@ def save_scenario(config: CrimeTypeConfig, path: Path | str) -> None:
 def list_scenarios(scenarios_dir: Path | str = "scenarios") -> list[str]:
     """List all scenario files in the scenarios directory.
     
-    Returns a sorted list of scenario IDs (filenames without .json extension).
+    Args:
+        scenarios_dir: Directory containing scenario JSON files. Defaults to "scenarios".
+    
+    Returns:
+        A sorted list of scenario IDs (filenames without .json extension).
     """
     scenarios_path = Path(scenarios_dir)
     if not scenarios_path.exists():
