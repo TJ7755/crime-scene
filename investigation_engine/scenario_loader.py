@@ -79,7 +79,8 @@ def list_scenarios(scenarios_dir: Path | str = "scenarios") -> list[str]:
         scenarios_dir: Directory containing scenario JSON files. Defaults to "scenarios".
     
     Returns:
-        A sorted list of scenario IDs (filenames without .json extension).
+        A sorted list of scenario IDs (filenames without .json extension). Returns an empty
+        list if the scenarios directory does not exist.
     """
     scenarios_path = Path(scenarios_dir)
     if not scenarios_path.exists():
