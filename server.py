@@ -240,9 +240,12 @@ async def play_scenario(request: PlayScenarioRequest) -> dict[str, Any]:
                 f"seed={request.seed}, max_turns={request.max_turns}"
             )
             
+            # Register the loaded config if it's not already in CRIME_TYPE_CONFIGS
+            from investigation_engine.config import CRIME_TYPE_CONFIGS
+            if config.name not in CRIME_TYPE_CONFIGS:
+                CRIME_TYPE_CONFIGS[config.name] = config
+            
             # Initialize game engine with the loaded config
-            # We need to create a modified GameEngine that accepts a config
-            # For now, we'll use the crime type name from the config
             game_engine = GameEngine(
                 crime_type=config.name,
                 seed=request.seed,
