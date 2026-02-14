@@ -1,0 +1,77 @@
+{
+  "name": "hit_and_run",
+  "allowed_evidence_types": [
+    "physical",
+    "digital",
+    "testimonial",
+    "circumstantial"
+  ],
+  "baseline_hypotheses": {
+    "player_committed_crime": 0.08,
+    "alternative_actor": -0.22,
+    "non_criminal_explanation": -0.5
+  },
+  "default_public_pressure": 0.76,
+  "turn_pressure_curve": [
+    0.08,
+    0.08,
+    0.09,
+    0.1,
+    0.1,
+    0.11,
+    0.11,
+    0.12,
+    0.12,
+    0.13
+  ],
+  "evidence_templates": [
+    {
+      "id": "ev_phys_1",
+      "category": "physical",
+      "base_reliability": 0.78,
+      "detectability": 0.61,
+      "manipulability": 0.42,
+      "current_credibility": 0.78,
+      "hypothesis_impacts": {
+        "player_committed_crime": 0.76,
+        "alternative_actor": -0.24
+      }
+    },
+    {
+      "id": "ev_dig_1",
+      "category": "digital",
+      "base_reliability": 0.71,
+      "detectability": 0.64,
+      "manipulability": 0.53,
+      "current_credibility": 0.71,
+      "hypothesis_impacts": {
+        "player_committed_crime": 0.52,
+        "non_criminal_explanation": -0.16
+      }
+    },
+    {
+      "id": "ev_test_1",
+      "category": "testimonial",
+      "base_reliability": 0.56,
+      "detectability": 0.8,
+      "manipulability": 0.78,
+      "current_credibility": 0.56,
+      "hypothesis_impacts": {
+        "player_committed_crime": 0.3,
+        "alternative_actor": 0.18
+      }
+    },
+    {
+      "id": "ev_circ_1",
+      "category": "circumstantial",
+      "base_reliability": 0.45,
+      "detectability": 0.84,
+      "manipulability": 0.82,
+      "current_credibility": 0.45,
+      "hypothesis_impacts": {
+        "player_committed_crime": 0.21,
+        "non_criminal_explanation": 0.16
+      }
+    }
+  ]
+}

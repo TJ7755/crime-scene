@@ -11,8 +11,10 @@ import { FocusView, type FocusMode } from "./components/FocusView";
 import { Header } from "./components/Header";
 import { PressurePanel } from "./components/PressurePanel";
 import { Timeline } from "./components/Timeline";
+import { ScenarioEditor } from "./components/ScenarioEditor";
 
 type LeftPanelTab = "evidence" | "timeline";
+type ViewMode = "game" | "editor";
 
 const EMPTY_STATE: VisibleState = {
   case_id: "case_001",
@@ -47,6 +49,7 @@ function formatError(error: unknown): string {
 export default function App() {
   const adapter = useMemo(() => createEngineAdapter(), []);
 
+  const [viewMode, setViewMode] = useState<ViewMode>("game");
   const [visibleState, setVisibleState] = useState<VisibleState | null>(null);
   const [actions, setActions] = useState<ActionOption[]>([]);
   const [leftPanelTab, setLeftPanelTab] = useState<LeftPanelTab>("evidence");
@@ -163,22 +166,45 @@ export default function App() {
     state.evidence.find((item) => item.id === selectedEvidenceId) ?? state.evidence[0] ?? null;
   const selectedTimeline = state.timeline[selectedTimelineIndex] ?? null;
 
+  // Show scenario editor if in editor mode
+  if (viewMode === "editor") {
+    return (
+      <ScenarioEditor
+        onClose={() => setViewMode("game")}
+        onPlay={async () => {
+          setViewMode("game");
+          // Reload the game state after playing scenario
+          await hydrate();
+        }}
+      />
+    );
+  }
+
   return (
     <div className="dossier-shell">
       <div className="mx-auto max-w-[1600px] px-3 py-3">
-        <Header
-          caseId={state.case_id}
-          crimeType={state.crime_type}
-          day={state.turn}
-          status={state.status}
-          activePage={activePage}
-          pages={casePages}
-          adapterKind={adapter.kind}
-          busy={busy}
-          onPageChange={setActivePage}
-          onSavePage={handleSavePage}
-          onLoadPage={handleLoadPage}
-        />
+        <div className="mb-3 flex items-center justify-between">
+          <Header
+            caseId={state.case_id}
+            crimeType={state.crime_type}
+            day={state.turn}
+            status={state.status}
+            activePage={activePage}
+            pages={casePages}
+            adapterKind={adapter.kind}
+            busy={busy}
+            onPageChange={setActivePage}
+            onSavePage={handleSavePage}
+            onLoadPage={handleLoadPage}
+          />
+          <button
+            type="button"
+            onClick={() => setViewMode("editor")}
+            className="rounded-md bg-accent-blue px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            Scenario Editor
+          </button>
+        </div>
 
         <p
           className="mb-2 min-h-6 text-sm text-dossier-700"
