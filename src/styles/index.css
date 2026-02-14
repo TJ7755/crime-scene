@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Source Sans Pro", "Avenir Next", "Segoe UI", sans-serif;
+  color: #1b2735;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: #1b2735;
+  background-color: #eef3f8;
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(120, 142, 165, 0.22), transparent 38%),
+    radial-gradient(circle at 90% 20%, rgba(98, 119, 146, 0.16), transparent 42%),
+    linear-gradient(180deg, rgba(234, 241, 248, 0.96) 0%, rgba(246, 248, 251, 0.9) 100%);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@layer components {
+  .dossier-shell {
+    @apply min-h-screen;
+  }
+
+  .dossier-panel {
+    @apply rounded-md border border-dossier-200/95 bg-white/85 p-3 shadow-dossier backdrop-blur-sm;
+  }
+
+  .dossier-label {
+    @apply text-[0.67rem] font-semibold uppercase tracking-[0.16em] text-dossier-500;
+  }
+
+  .state-pill {
+    @apply rounded-full border border-dossier-300 bg-dossier-50 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wide text-dossier-700;
+  }
+
+  .focus-mode-button {
+    @apply rounded-sm border border-dossier-300 px-2 py-1 text-xs font-medium text-dossier-700 transition-colors hover:bg-dossier-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue;
+  }
+
+  .redaction-bar {
+    @apply block h-3 rounded-sm bg-dossier-900/85;
+  }
+}
