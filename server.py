@@ -109,10 +109,10 @@ async def root():
 @app.get("/api/visible_state")
 async def get_visible_state() -> dict[str, Any]:
     """Get current game state formatted as VisibleState."""
-    if game_engine is None:
-        raise HTTPException(status_code=500, detail="Game engine not initialized")
-    
     async with engine_lock:
+        if game_engine is None:
+            raise HTTPException(status_code=500, detail="Game engine not initialized")
+        
         try:
             visible_state = map_game_state_to_visible_state(game_engine.state)
             logger.info(f"Returning visible state for turn {game_engine.state.turn}")
@@ -125,10 +125,10 @@ async def get_visible_state() -> dict[str, Any]:
 @app.get("/api/actions")
 async def get_actions() -> dict[str, Any]:
     """Get available player actions."""
-    if game_engine is None:
-        raise HTTPException(status_code=500, detail="Game engine not initialized")
-    
     async with engine_lock:
+        if game_engine is None:
+            raise HTTPException(status_code=500, detail="Game engine not initialized")
+        
         try:
             actions = map_actions_to_action_options(game_engine.state)
             logger.info(f"Returning {len(actions)} available actions")
@@ -141,10 +141,10 @@ async def get_actions() -> dict[str, Any]:
 @app.post("/api/apply_action")
 async def apply_action(request: ApplyActionRequest) -> dict[str, Any]:
     """Apply a player action and return updated state."""
-    if game_engine is None:
-        raise HTTPException(status_code=500, detail="Game engine not initialized")
-    
     async with engine_lock:
+        if game_engine is None:
+            raise HTTPException(status_code=500, detail="Game engine not initialized")
+        
         try:
             action_id = request.action_id
             logger.info(f"Applying action: {action_id}")

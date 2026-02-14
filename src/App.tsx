@@ -171,7 +171,7 @@ export default function App() {
     return (
       <ScenarioEditor
         onClose={() => setViewMode("game")}
-        onPlay={async (scenarioId) => {
+        onPlay={async () => {
           setViewMode("game");
           // Reload the game state after playing scenario
           await hydrate();

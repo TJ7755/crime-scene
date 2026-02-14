@@ -8,6 +8,9 @@ from typing import Any
 
 from .config import CrimeTypeConfig
 
+# JSON formatting constant
+JSON_INDENT = 2
+
 
 def _serialize_crime_type_config(config: CrimeTypeConfig) -> dict[str, Any]:
     """Serialize a CrimeTypeConfig to a JSON-compatible dictionary."""
@@ -44,7 +47,7 @@ def save_scenario(config: CrimeTypeConfig, path: Path | str) -> None:
     """Save a scenario to a JSON file."""
     data = _serialize_crime_type_config(config)
     with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+        json.dump(data, f, indent=JSON_INDENT, ensure_ascii=False)
 
 
 def list_scenarios(scenarios_dir: Path | str = "scenarios") -> list[str]:

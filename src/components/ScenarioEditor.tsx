@@ -123,7 +123,7 @@ export function ScenarioEditor({ onClose, onPlay }: ScenarioEditorProps) {
   function addEvidenceTemplate() {
     if (!config) return;
     const newTemplate: EvidenceTemplate = {
-      id: `ev_new_${Date.now()}`,
+      id: `ev_new_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
       category: "physical",
       base_reliability: 0.5,
       detectability: 0.5,
@@ -431,11 +431,12 @@ export function ScenarioEditor({ onClose, onPlay }: ScenarioEditorProps) {
                             const impacts = JSON.parse(e.target.value);
                             updateEvidenceTemplate(index, { hypothesis_impacts: impacts });
                           } catch {
-                            // Invalid JSON, ignore
+                            // Invalid JSON - user is still typing, allow them to continue
                           }
                         }}
                         className="w-full rounded border border-dossier-300 px-2 py-1 text-sm font-mono"
                         rows={3}
+                        placeholder='{"player_committed_crime": 0.5}'
                       />
                     </div>
                   </div>
