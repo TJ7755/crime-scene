@@ -1,0 +1,72 @@
+# ------------------------------
+# OS / Editor files
+# ------------------------------
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ------------------------------
+# Logs
+# ------------------------------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ------------------------------
+# Environment / secrets
+# ------------------------------
+.env
+.env.*
+!.env.example
+
+# ------------------------------
+# Node / Vite / frontend
+# ------------------------------
+node_modules/
+dist/
+build/
+.vite/
+*.tsbuildinfo
+coverage/
+
+# ------------------------------
+# Python
+# ------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.hypothesis/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+.eggs/
+*.egg-info/
+.venv/
+venv/
+env/
+ENV/
+.ipynb_checkpoints/
+
+# ------------------------------
+# Test / temp outputs
+# ------------------------------
+.cache/
+.tmp/
+tmp/
+
+# ------------------------------
+# Local runtime data (uncomment if saves are machine-local)
+# ------------------------------
+# saves/
