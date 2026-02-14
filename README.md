@@ -5,11 +5,17 @@ The UI is intentionally a thin client over engine-provided visible state and dis
 
 ## Stack
 
+### Frontend
 - React
 - TypeScript
 - Vite
 - Tailwind CSS
 - Vitest + Testing Library (smoke test)
+
+### Backend (Python)
+- FastAPI - Web framework for API endpoints
+- Uvicorn - ASGI server
+- Investigation Engine - Deterministic game simulation
 
 ## Setup
 
@@ -46,18 +52,45 @@ This project supports two adapter modes in `src/api/engineAdapter.ts`.
 
 ### Use Live Engine
 
-Set environment variables (for example in `.env.local`):
+#### 1. Start the Python Backend Server
+
+First, install Python dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Then start the FastAPI server:
+
+```bash
+python server.py
+```
+
+The server will run on `http://127.0.0.1:8000` by default.
+
+#### 2. Configure Frontend
+
+Set environment variables (for example in `.env` or `.env.local`):
 
 ```bash
 VITE_USE_MOCK=false
 VITE_ENGINE_API_BASE=http://localhost:8000
 ```
 
+#### 3. Start Frontend Development Server
+
+```bash
+npm run dev
+```
+
+The Vite dev server is configured to proxy `/api` requests to the backend server.
+
 When live mode is enabled, the front-end calls:
 
-- `GET /api/visible_state`
-- `GET /api/actions`
-- `POST /api/apply_action` with `{ action_id, params }`
+- `GET /api/visible_state` - Get current game state
+- `GET /api/actions` - Get available player actions
+- `POST /api/apply_action` with `{ action_id, params? }` - Apply an action (params is optional)
+- `POST /api/reset` with `{ seed, crime_type, max_turns }` - Reset the game
 
 ## Deterministic Mock Demo
 
